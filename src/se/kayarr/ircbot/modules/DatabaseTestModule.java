@@ -1,5 +1,7 @@
 package se.kayarr.ircbot.modules;
 
+import java.sql.SQLException;
+
 import org.pircbotx.Channel;
 import org.pircbotx.PircBotX;
 import org.pircbotx.User;
@@ -29,6 +31,14 @@ public class DatabaseTestModule extends Module implements CommandHandler, TableH
 	
 	@Override
 	public void onTableCreate(Table table) {
+		Database db = table.getOwner();
+		
+		try {
+			db.sql("CREATE TABLE IF NOT EXISTS " + table.getName() + " (ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY, TEXT VARCHAR)");
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
@@ -38,6 +48,14 @@ public class DatabaseTestModule extends Module implements CommandHandler, TableH
 	@Override
 	public void onHandleCommand(PircBotX bot, Channel channel, User user,
 			String command, String parameters) {
+		
+		bot.sendMessage(channel, "Adding text '" + parameters + "'");
+		try {
+			testTable.getOwner().sql("INSERT INTO " + testTable.getName() + " (TEXT) VALUES ('" + parameters + "')");
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
