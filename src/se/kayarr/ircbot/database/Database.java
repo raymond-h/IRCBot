@@ -31,6 +31,13 @@ public class Database {
 	public void connect() throws SQLException {
 		if(conn == null) {
 			
+			try {
+				Class.forName("org.h2.Driver");
+			}
+			catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+			
 			conn = DriverManager.getConnection("jdbc:h2:"+name+";create=true");
 		}
 	}
