@@ -5,8 +5,20 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import lombok.Getter;
+import lombok.experimental.Accessors;
 
 public class Database {
+	@Accessors(fluent=true) @Getter private static Database moduleData = null;
+	
+	static {
+		try {
+			moduleData = connectToDatabase("module_data");
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	@Getter private String name;
 	private Connection conn;
 	
