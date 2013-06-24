@@ -31,10 +31,8 @@ public class DatabaseTestModule extends Module implements CommandHandler, TableH
 	
 	@Override
 	public void onTableCreate(Table table) {
-		Database db = table.getOwner();
-		
 		try {
-			db.sql("CREATE TABLE IF NOT EXISTS " + table.getName() + " (ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY, TEXT VARCHAR)");
+			table.createIfNonexistant("TEXT VARCHAR");
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
