@@ -75,7 +75,7 @@ public class CommandManager {
 	public boolean dispatchCommand(PircBotX bot, Channel channel, User user,
 			String command, String parameters) {
 		Command cmd = findMatchingCommand(command);
-		if (cmd == null)
+		if (cmd == null || cmd.handler == null)
 			return false;
 
 		cmd.handler.onHandleCommand(bot, channel, user, command, parameters);
