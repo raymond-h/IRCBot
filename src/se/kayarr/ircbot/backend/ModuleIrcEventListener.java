@@ -4,7 +4,7 @@ import org.pircbotx.PircBotX;
 import org.pircbotx.hooks.Event;
 import org.pircbotx.hooks.Listener;
 
-public class CommandEventListener implements Listener<PircBotX> {
+public class ModuleIrcEventListener implements Listener<PircBotX> {
 
 	@Override
 	public void onEvent(Event<PircBotX> event) throws Exception {

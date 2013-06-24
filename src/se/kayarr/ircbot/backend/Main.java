@@ -14,7 +14,7 @@ public class Main {
 			bot.setVerbose(true);
 			bot.setName("Kirierath");
 			bot.getListenerManager().addListener(new CommandListener());
-			bot.getListenerManager().addListener(new CommandEventListener());
+			bot.getListenerManager().addListener(new ModuleIrcEventListener());
 			
 			ModuleManager.get().initialize();
 
