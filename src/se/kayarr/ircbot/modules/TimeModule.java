@@ -26,7 +26,9 @@ public class TimeModule extends Module implements CommandHandler {
 	public void onHandleCommand(PircBotX bot, Channel channel, User user,
 			String command, String parameters) {
 		
-		bot.sendMessage(channel, "The time is " + SimpleDateFormat.getTimeInstance().format(new Date()));
+		String time = SimpleDateFormat.getTimeInstance().format(new Date());
+		
+		bot.sendMessage(channel, "The time is " + time);
 	}
 
 }
