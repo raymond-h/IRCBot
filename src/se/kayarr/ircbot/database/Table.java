@@ -32,6 +32,7 @@ public class Table {
 			if(handler != null) {
 				if(!owner.tableExists(name)) {
 					//Create table
+					System.out.println("Table '" + name + "' does not exist, calling onTableCreate...");
 					handler.onTableCreate(this);
 				}
 				else {
@@ -39,9 +40,12 @@ public class Table {
 					
 					if(oldVersion < version) {
 						//Upgrade table
+						System.out.println("Table '" + name + "' needs an upgrade, calling onTableUpgrade...");
 						handler.onTableUpgrade(this, oldVersion, version);
 					}
 				}
+				
+				System.out.println("Table '" + name + "' is ready to go!");
 
 			}
 			

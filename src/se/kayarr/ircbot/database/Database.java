@@ -2,6 +2,7 @@ package se.kayarr.ircbot.database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -39,6 +40,8 @@ public class Database {
 			}
 			
 			conn = DriverManager.getConnection("jdbc:h2:"+name+";create=true");
+			
+			sql("SET IGNORECASE TRUE");
 		}
 	}
 	
@@ -54,8 +57,24 @@ public class Database {
 		return t;
 	}
 	
-	//TODO Temporary implementation
 	public boolean tableExists(String name) {
+		try {
+			String query = "SELECT COUNT(*) AS TABLE_EXISTS FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '" + name.toUpperCase() + "'";
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			
+			if(!rs.next()) return false;
+			
+			boolean returnval = rs.getBoolean("TABLE_EXISTS");
+			
+			stmt.close();
+			
+			return returnval;
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
 		return false;
 	}
 	
