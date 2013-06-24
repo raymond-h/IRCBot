@@ -13,6 +13,7 @@ public class Main {
 			PircBotX bot = new PircBotX();
 			bot.setVerbose(true);
 			bot.setName("Kirierath");
+			bot.getListenerManager().addListener(new CommandListener());
 			bot.getListenerManager().addListener(new CommandEventListener());
 			
 			ModuleManager.get().initialize();

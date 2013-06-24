@@ -1,7 +1,12 @@
 package se.kayarr.ircbot.backend;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.pircbotx.PircBotX;
+import org.pircbotx.hooks.Event;
 
 import se.kayarr.ircbot.modules.TestModule;
 
@@ -32,6 +37,22 @@ public class ModuleManager {
 			
 			for(Module m : modules) {
 				m.initialize();
+			}
+		}
+	}
+	
+	public void dispatchIrcEvent(Event<PircBotX> event) {
+		for(Module m : modules) {
+			Method callback = m.getEventCallbackMethod(event.getClass());
+			
+			if(callback == null) continue;
+			
+			try {
+				callback.invoke(m, event);
+			}
+			catch (IllegalAccessException | IllegalArgumentException
+					| InvocationTargetException e) {
+				e.printStackTrace();
 			}
 		}
 	}

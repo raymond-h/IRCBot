@@ -3,6 +3,7 @@ package se.kayarr.ircbot.modules;
 import org.pircbotx.Channel;
 import org.pircbotx.PircBotX;
 import org.pircbotx.User;
+import org.pircbotx.hooks.events.ActionEvent;
 
 import se.kayarr.ircbot.backend.CommandHandler;
 import se.kayarr.ircbot.backend.CommandManager;
@@ -25,6 +26,11 @@ public class TestModule extends Module implements CommandHandler {
 			String command, String parameters) {
 		
 		bot.sendMessage(channel, "Test message");
+	}
+	
+	public void onAction(ActionEvent<PircBotX> event) {
+		
+		event.respond("dances");
 	}
 
 }
