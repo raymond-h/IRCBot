@@ -4,11 +4,9 @@ import java.lang.reflect.Method;
 
 import org.pircbotx.hooks.Event;
 
-public class Module {
+public abstract class Module {
 	
-	public void initialize() {
-		//Initialization of the module goes here
-	}
+	public abstract void initialize();
 	
 	@SuppressWarnings("rawtypes")
 	public final Method getEventCallbackMethod(Class<? extends Event> clazz) {

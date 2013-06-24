@@ -13,7 +13,6 @@ public class TestModule extends Module implements CommandHandler {
 
 	@Override
 	public void initialize() {
-		super.initialize();
 		
 		CommandManager.get().newCommand()
 			.addAlias("test")
