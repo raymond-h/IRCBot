@@ -1,5 +1,26 @@
 package se.kayarr.ircbot.backend;
 
-public class ModuleManager {
+import java.util.ArrayList;
+import java.util.List;
 
+import se.kayarr.ircbot.modules.TestModule;
+
+public class ModuleManager {
+	private ModuleManager() {
+		addModule(new TestModule());
+	};
+	
+	//*** This needs to be replaced to make each bot instance have a separate ModuleManager
+	private static final ModuleManager instance = new ModuleManager();
+	
+	public static ModuleManager get() {
+		return instance;
+	}
+	//***
+	
+	private List<Module> modules = new ArrayList<>();
+	
+	private void addModule(Module module) {
+		modules.add(module);
+	}
 }

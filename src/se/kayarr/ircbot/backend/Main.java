@@ -16,19 +16,6 @@ public class Main {
 			bot.setVerbose(true);
 			bot.setName("Kirierath");
 			bot.getListenerManager().addListener(new CommandEventListener());
-			
-			CommandManager.get().newCommand()
-					.addAlias("hello")
-					.addAlias("hi")
-					.handler(new CommandHandler() {
-						
-						public void onHandleCommand(PircBotX bot, Channel channel, User user,
-								String command, String parameters) {
-							
-							bot.sendMessage(channel, "Hello to you too!");
-						}
-					})
-					.commit();
 
 			try {
 				bot.connect("portlane.esper.net");
