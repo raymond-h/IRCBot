@@ -9,10 +9,12 @@ import org.pircbotx.PircBotX;
 import org.pircbotx.hooks.Event;
 
 import se.kayarr.ircbot.modules.TestModule;
+import se.kayarr.ircbot.modules.TimeModule;
 
 public class ModuleManager {
 	private ModuleManager() {
 		addModule(new TestModule());
+		addModule(new TimeModule());
 	};
 	
 	//*** This needs to be replaced to make each bot instance have a separate ModuleManager
