@@ -3,6 +3,7 @@ package se.kayarr.ircbot.database;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -54,5 +55,11 @@ public class Database {
 	//TODO Temporary implementation
 	int tableVersion(String name) {
 		return 1;
+	}
+	
+	public void sql(String query) throws SQLException {
+		Statement stmt = conn.createStatement();
+		stmt.execute(query);
+		stmt.close();
 	}
 }
