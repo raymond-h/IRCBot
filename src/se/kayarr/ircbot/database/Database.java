@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 
@@ -20,7 +21,7 @@ public class Database {
 	}
 	
 	@Getter private String name;
-	private Connection conn;
+	@Getter(value=AccessLevel.PACKAGE) private Connection conn;
 	
 	public Database(String name) {
 		this.name = name;
@@ -40,7 +41,9 @@ public class Database {
 	}
 	
 	public Table table(String name, int version, TableHandler handler) {
-		return new Table(this, name, version, handler);
+		Table t = new Table(this, name, version, handler);
+		t.initialize();
+		return t;
 	}
 	
 	//TODO Temporary implementation

@@ -8,11 +8,16 @@ public class Table {
 	@Getter private String name;
 	@Getter private int version;
 	
+	private TableHandler handler;
+	
 	Table(Database owner, String name, int version, TableHandler handler) {
 		this.owner = owner;
 		this.name = name;
 		this.version = version;
-		
+		this.handler = handler;
+	}
+	
+	void initialize() {
 		if(handler != null) {
 			if(!owner.tableExists(name)) {
 				//Create table
