@@ -27,21 +27,29 @@ public class Table {
 	}
 	
 	void initialize() {
-		if(handler != null) {
-			if(!owner.tableExists(name)) {
-				//Create table
-				handler.onTableCreate(this);
-			}
-			else {
-				int oldVersion = owner.tableVersion(name);
-				
-				if(oldVersion < version) {
-					//Upgrade table
-					handler.onTableUpgrade(this, oldVersion, version);
+		try {
+			
+			if(handler != null) {
+				if(!owner.tableExists(name)) {
+					//Create table
+					handler.onTableCreate(this);
 				}
-			}
+				else {
+					int oldVersion = owner.tableVersion(name);
+					
+					if(oldVersion < version) {
+						//Upgrade table
+						handler.onTableUpgrade(this, oldVersion, version);
+					}
+				}
 
+			}
+			
 		}
+		catch(SQLException e) {
+			e.printStackTrace();
+		}
+		
 	}
 	
 	public void createIfNonexistant(String... columns) throws SQLException {

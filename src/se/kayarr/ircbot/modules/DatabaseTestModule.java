@@ -30,17 +30,13 @@ public class DatabaseTestModule extends Module implements CommandHandler, TableH
 	}
 	
 	@Override
-	public void onTableCreate(Table table) {
-		try {
-			table.createIfNonexistant("TEXT VARCHAR");
-		}
-		catch (SQLException e) {
-			e.printStackTrace();
-		}
+	public void onTableCreate(Table table) throws SQLException {
+		
+		table.createIfNonexistant("TEXT VARCHAR");
 	}
 	
 	@Override
-	public void onTableUpgrade(Table table, int oldVersion, int newVersion) {
+	public void onTableUpgrade(Table table, int oldVersion, int newVersion) throws SQLException {
 	}
 	
 	@Override
@@ -48,6 +44,7 @@ public class DatabaseTestModule extends Module implements CommandHandler, TableH
 			String command, String parameters) {
 		
 		bot.sendMessage(channel, "Adding text '" + parameters + "'");
+		
 		try {
 			testTable.getOwner().sql("INSERT INTO " + testTable.getName() + " (TEXT) VALUES ('" + parameters + "')");
 		}
