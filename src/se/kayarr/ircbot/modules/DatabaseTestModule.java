@@ -13,6 +13,7 @@ import se.kayarr.ircbot.database.TableHandler;
 
 public class DatabaseTestModule extends Module implements CommandHandler, TableHandler {
 	
+	private static final int TEST_TABLE_VERSION = 1;
 	private Table testTable;
 
 	@Override
@@ -23,7 +24,7 @@ public class DatabaseTestModule extends Module implements CommandHandler, TableH
 			.handler(this)
 			.finish();
 		
-		testTable = Database.moduleData().table("test_table", 1, this);
+		testTable = Database.moduleData().table("test_table", TEST_TABLE_VERSION, this);
 	}
 	
 	@Override
