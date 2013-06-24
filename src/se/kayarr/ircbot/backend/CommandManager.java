@@ -35,9 +35,7 @@ public class CommandManager {
 		private CommandEntryBuilder() {
 		};
 
-		@Getter
-		@Setter
-		private CommandHandler handler;
+		@Getter @Setter private CommandHandler handler;
 		private Set<String> aliases = new HashSet<>();
 
 		public CommandEntryBuilder addAlias(String alias) {
@@ -45,7 +43,7 @@ public class CommandManager {
 			return this;
 		}
 
-		public void commit() {
+		public void finish() {
 			registeredCommands.add(new Command(handler, aliases));
 		}
 	}

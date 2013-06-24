@@ -2,9 +2,7 @@ package se.kayarr.ircbot.backend;
 
 import java.io.IOException;
 
-import org.pircbotx.Channel;
 import org.pircbotx.PircBotX;
-import org.pircbotx.User;
 import org.pircbotx.exception.IrcException;
 import org.pircbotx.exception.NickAlreadyInUseException;
 
@@ -16,6 +14,8 @@ public class Main {
 			bot.setVerbose(true);
 			bot.setName("Kirierath");
 			bot.getListenerManager().addListener(new CommandEventListener());
+			
+			ModuleManager.get().initialize();
 
 			try {
 				bot.connect("portlane.esper.net");

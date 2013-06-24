@@ -18,9 +18,21 @@ public class ModuleManager {
 	}
 	//***
 	
+	private boolean initialized = false;
+	
 	private List<Module> modules = new ArrayList<>();
 	
 	private void addModule(Module module) {
 		modules.add(module);
+	}
+	
+	public void initialize() {
+		if(!initialized) {
+			initialized = true;
+			
+			for(Module m : modules) {
+				m.initialize();
+			}
+		}
 	}
 }
