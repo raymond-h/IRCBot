@@ -22,8 +22,31 @@ public class SqlTestCommandModule extends Module implements CommandHandler {
 	public void initialize() {
 		
 		CommandManager.get().newCommand()
-			.addAlias("sql")
+			.addAlias("sql-query")
 			.handler(this)
+			.finish();
+		
+		CommandManager.get().newCommand()
+			.addAlias("sql")
+			.handler(new CommandHandler() {
+				@Override
+				public void onHandleCommand(PircBotX bot, Channel channel, User user,
+						String command, String parameters) {
+					
+					try {
+						Database.moduleData().sql(parameters);
+						
+						bot.sendMessage(channel, Colors.BOLD + Colors.GREEN + "Executed successfully");
+					}
+					catch (SQLException e) {
+						e.printStackTrace();
+						
+						bot.sendMessage(channel, Colors.BOLD + Colors.RED + "Error: " + e.getMessage() +
+								" (check console output for more information)");
+					}
+					
+				}
+			})
 			.finish();
 	}
 
@@ -51,6 +74,9 @@ public class SqlTestCommandModule extends Module implements CommandHandler {
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
+			
+			bot.sendMessage(channel, Colors.BOLD + Colors.RED + "Error: " + e.getMessage() +
+					" (check console output for more information)");
 		}
 	}
 
