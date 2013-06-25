@@ -86,4 +86,11 @@ public class Database {
 		stmt.execute(query);
 		stmt.close();
 	}
+	
+	//TODO Make this method actually return data
+	public void sqlQuery(String query) throws SQLException {
+		Statement stmt = conn.createStatement();
+		stmt.executeQuery(query);
+		stmt.close();
+	}
 }
