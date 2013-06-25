@@ -68,11 +68,25 @@ public class Table {
 		owner.sql("CREATE TABLE IF NOT EXISTS " + name + " (" + columnsString + ")");
 	}
 	
-	public ResultSet select(String[] columns, String whereCond) throws SQLException {
-		Connection conn = owner.getConn();
-		String columnsStr = Joiner.on(",").join(columns);
+	public void select(String[] columns, String whereCond) throws SQLException {
+		//TODO Have this class return some object that contains a list of key-value mappings
 		
-		Statement stmt = conn.createStatement();
-		return stmt.executeQuery("SELECT " + columnsStr + " FROM " + name + (whereCond == null ? "" : " WHERE " + whereCond));
+//		Connection conn = owner.getConn();
+//		String columnsStr = Joiner.on(",").join(columns);
+//		
+//		Statement stmt = conn.createStatement();
+//		ResultSet rs = stmt.executeQuery("SELECT " + columnsStr + " FROM " + name + (whereCond == null ? "" : " WHERE " + whereCond));
 	};
+	
+	public void insert(String[] columns, Object[] values) {
+		//TODO Return a builder for inserting maybe
+	}
+	
+	public void update(String column, Object value, String whereCond) {
+		//TODO Return a builder for updating maybe
+	}
+	
+	public void delete(String whereCond) {
+		//TODO Implement this
+	}
 }
