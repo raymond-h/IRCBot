@@ -38,6 +38,11 @@ public class Table {
 					//Create table
 					System.out.println("Table '" + name + "' does not exist, calling onTableCreate...");
 					handler.onTableCreate(this);
+					
+					owner.tableVersions.newInsert()
+						.put("TABLE_NAME", "'" + name + "'")
+						.put("VERSION", Integer.toString(version, 10))
+						.insert();
 				}
 				else {
 					int oldVersion = owner.tableVersion(name);
@@ -46,6 +51,18 @@ public class Table {
 						//Upgrade table
 						System.out.println("Table '" + name + "' needs an upgrade, calling onTableUpgrade...");
 						handler.onTableUpgrade(this, oldVersion, version);
+						
+						int updated = owner.tableVersions.newUpdate()
+							.where("TABLE_NAME = '" + name + "'")
+							.set("VERSION", Integer.toString(version, 10))
+							.update();
+						
+						if(updated < 1) {
+							owner.tableVersions.newInsert()
+								.put("TABLE_NAME", "'" + name + "'")
+								.put("VERSION", Integer.toString(version, 10))
+								.insert();
+						}
 					}
 				}
 				
@@ -128,10 +145,12 @@ public class Table {
 			return this;
 		}
 		
-		public void update() throws SQLException {
+		public int update() throws SQLException {
+			int r = 0;
 			for(Map.Entry<String,String> e : updateValues.entrySet()) {
-				Table.this.update(e.getKey(), e.getValue(), where);
+				r = Table.this.update(e.getKey(), e.getValue(), where);
 			}
+			return r;
 		}
 	}
 	
@@ -140,8 +159,8 @@ public class Table {
 	}
 	
 	//UPDATE {this.name} SET {column} = {value} [WHERE {whereCond}]
-	public void update(String column, String value, String whereCond) throws SQLException {
-		owner.sql("UPDATE " + name + " SET " + column + " = " + value +
+	public int update(String column, String value, String whereCond) throws SQLException {
+		return owner.sqlUpdate("UPDATE " + name + " SET " + column + " = " + value +
 				( whereCond == null ? "" : " WHERE " + whereCond ) );
 	}
 	

@@ -31,6 +31,8 @@ public class Database {
 	@Getter private String name;
 	@Getter(value=AccessLevel.PACKAGE) private Connection conn;
 	
+	Table tableVersions = null;
+	
 	public Database(String name) {
 		this.name = name;
 	}
@@ -46,6 +48,10 @@ public class Database {
 			}
 			
 			conn = DriverManager.getConnection("jdbc:h2:"+name+";create=true");
+			
+			sql("CREATE SCHEMA IF NOT EXISTS MODULE_META");
+			tableVersions = table("MODULE_META.TABLE_VERSIONS", -1, null);
+			tableVersions.createIfNonexistant("TABLE_NAME VARCHAR", "VERSION INTEGER");
 		}
 	}
 	
@@ -84,7 +90,22 @@ public class Database {
 	
 	//TODO Temporary implementation
 	int tableVersion(String name) {
-		return 1;
+		try {
+			List<Map<String,Object>> version = tableVersions.select(new String[] {"VERSION"}, "TABLE_NAME = '" + name + "'");
+			
+			if(version.size() == 0) return -1;
+			
+			int ver = (Integer)version.get(0).get("VERSION");
+			
+			System.out.println("Version of '" + name + "' is " + ver);
+			
+			return ver;
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return -1;
 	}
 	
 	@Accessors(fluent=true,chain=true)
@@ -103,23 +124,33 @@ public class Database {
 			return this;
 		}
 		
-		public void execute() throws SQLException {
+		private PreparedStatement createPreparedStatement() throws SQLException {
 			PreparedStatement stmt = conn.prepareStatement(query);
 			
 			for(Map.Entry<Integer, Object> e : objects.entrySet()) {
 				stmt.setObject(e.getKey(), e.getValue());
 			}
+			
+			return stmt;
+		}
+		
+		public void execute() throws SQLException {
+			PreparedStatement stmt = createPreparedStatement();
 			
 			stmt.execute();
 			stmt.close();
 		}
 		
-		public List<Map<String, Object>> executeQuery() throws SQLException {
-			PreparedStatement stmt = conn.prepareStatement(query);
+		public int executeUpdate() throws SQLException {
+			PreparedStatement stmt = createPreparedStatement();
 			
-			for(Map.Entry<Integer, Object> e : objects.entrySet()) {
-				stmt.setObject(e.getKey(), e.getValue());
-			}
+			int r = stmt.executeUpdate();
+			stmt.close();
+			return r;
+		}
+		
+		public List<Map<String, Object>> executeQuery() throws SQLException {
+			PreparedStatement stmt = createPreparedStatement();
 			
 			ResultSet rs = stmt.executeQuery();
 			List<Map<String,Object>> result = convertResultSetToList(rs);
@@ -134,6 +165,10 @@ public class Database {
 	
 	public void sql(String query) throws SQLException {
 		newSqlQuery(query).execute();
+	}
+	
+	public int sqlUpdate(String query) throws SQLException {
+		return newSqlQuery(query).executeUpdate();
 	}
 	
 	public List<Map<String,Object>> sqlQuery(String query) throws SQLException {
