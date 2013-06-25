@@ -34,14 +34,15 @@ public class SqlTestCommandModule extends Module implements CommandHandler {
 						String command, String parameters) {
 					
 					try {
-						Database.moduleData().sql(parameters);
+						int updated = Database.moduleData().sqlUpdate(parameters);
 						
-						bot.sendMessage(channel, Colors.BOLD + Colors.GREEN + "Executed successfully");
+						bot.sendMessage(channel, Colors.GREEN + "Executed successfully " +
+								"(" + Colors.BOLD + updated + Colors.BOLD + " rows updated)");
 					}
 					catch (SQLException e) {
 						e.printStackTrace();
 						
-						bot.sendMessage(channel, Colors.BOLD + Colors.RED + "Error: " + e.getMessage() +
+						bot.sendMessage(channel, Colors.RED + "Error: " + e.getMessage().replaceAll("[\r\n]+", " | ") +
 								" (check console output for more information)");
 					}
 					
@@ -62,6 +63,8 @@ public class SqlTestCommandModule extends Module implements CommandHandler {
 				return;
 			}
 			
+			bot.sendMessage(channel, "Query matched " + data.size() + " rows");
+			
 			Joiner delimJoin = Joiner.on(" | ");
 			String columnsStr = delimJoin.join(data.get(0).keySet());
 			bot.sendMessage(channel, Colors.BOLD + columnsStr);
@@ -75,7 +78,7 @@ public class SqlTestCommandModule extends Module implements CommandHandler {
 		catch (SQLException e) {
 			e.printStackTrace();
 			
-			bot.sendMessage(channel, Colors.BOLD + Colors.RED + "Error: " + e.getMessage() +
+			bot.sendMessage(channel, Colors.BOLD + Colors.RED + "Error: " + e.getMessage().replaceAll("[\r\n]+", " | ") +
 					" (check console output for more information)");
 		}
 	}
