@@ -46,7 +46,7 @@ public class DatabaseTestModule extends Module implements CommandHandler, TableH
 		bot.sendMessage(channel, "Adding text '" + parameters + "'");
 		
 		try {
-			testTable.newInsert().put("TEXT", parameters).insert();
+			testTable.newInsert().put("TEXT", "'" + parameters + "'").insert();
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
