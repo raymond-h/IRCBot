@@ -24,7 +24,7 @@ public class SqlTestCommandModule extends Module implements CommandHandler {
 		CommandManager.get().newCommand()
 			.addAlias("sql-query")
 			.handler(this)
-			.finish();
+			.add();
 		
 		CommandManager.get().newCommand()
 			.addAlias("sql")
@@ -48,7 +48,7 @@ public class SqlTestCommandModule extends Module implements CommandHandler {
 					
 				}
 			})
-			.finish();
+			.add();
 	}
 
 	@Override

@@ -24,7 +24,7 @@ public class DatabaseTestModule extends Module implements CommandHandler, TableH
 		CommandManager.get().newCommand()
 			.addAlias("dbtest")
 			.handler(this)
-			.finish();
+			.add();
 		
 		testTable = Database.moduleData().table("test_table", TEST_TABLE_VERSION, this);
 	}

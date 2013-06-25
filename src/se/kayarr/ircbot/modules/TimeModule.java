@@ -19,7 +19,7 @@ public class TimeModule extends Module implements CommandHandler {
 		CommandManager.get().newCommand()
 			.addAlias("time")
 			.handler(this)
-			.finish();
+			.add();
 	}
 
 	@Override

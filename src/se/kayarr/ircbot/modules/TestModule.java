@@ -18,7 +18,7 @@ public class TestModule extends Module implements CommandHandler {
 			.addAlias("test")
 			.addAlias("test2")
 			.handler(this)
-			.finish();
+			.add();
 	}
 
 	@Override

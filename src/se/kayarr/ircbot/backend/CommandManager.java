@@ -43,7 +43,7 @@ public class CommandManager {
 			return this;
 		}
 
-		public void finish() {
+		public void add() {
 			registeredCommands.add(new Command(handler, aliases));
 		}
 	}
