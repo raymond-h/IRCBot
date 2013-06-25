@@ -3,8 +3,13 @@ package se.kayarr.ircbot.database;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -88,9 +93,29 @@ public class Database {
 	}
 	
 	//TODO Make this method actually return data
-	public void sqlQuery(String query) throws SQLException {
+	public List<Map<String,Object>> sqlQuery(String query) throws SQLException {
 		Statement stmt = conn.createStatement();
-		stmt.executeQuery(query);
+		ResultSet rs = stmt.executeQuery(query);
+		List<Map<String,Object>> result = convertResultSetToList(rs);
 		stmt.close();
+		return result;
+	}
+	
+	//This is oh-so-sneakily borrowed from Vivio...
+	private static List<Map<String, Object>> convertResultSetToList(
+			ResultSet rs) throws SQLException {
+		ResultSetMetaData md = rs.getMetaData();
+		int columns = md.getColumnCount();
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+
+		while (rs.next()) {
+			Map<String, Object> row = new HashMap<String, Object>(columns);
+			for (int i = 1; i <= columns; ++i) {
+				row.put(md.getColumnName(i), rs.getObject(i));
+			}
+			list.add(row);
+		}
+
+		return list;
 	}
 }
