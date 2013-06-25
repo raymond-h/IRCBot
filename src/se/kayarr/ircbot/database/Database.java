@@ -87,8 +87,7 @@ public class Database {
 		
 		return false;
 	}
-	
-	//TODO Temporary implementation
+
 	int tableVersion(String name) {
 		try {
 			List<Map<String,Object>> version = tableVersions.select(new String[] {"VERSION"}, "TABLE_NAME = '" + name + "'");
