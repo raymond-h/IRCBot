@@ -1,6 +1,9 @@
 package se.kayarr.ircbot.database;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -64,4 +67,12 @@ public class Table {
 		
 		owner.sql("CREATE TABLE IF NOT EXISTS " + name + " (" + columnsString + ")");
 	}
+	
+	public ResultSet select(String[] columns, String whereCond) throws SQLException {
+		Connection conn = owner.getConn();
+		String columnsStr = Joiner.on(",").join(columns);
+		
+		Statement stmt = conn.createStatement();
+		return stmt.executeQuery("SELECT " + columnsStr + " FROM " + name + (whereCond == null ? "" : " WHERE " + whereCond));
+	};
 }

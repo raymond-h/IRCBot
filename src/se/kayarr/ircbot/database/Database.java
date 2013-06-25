@@ -40,8 +40,6 @@ public class Database {
 			}
 			
 			conn = DriverManager.getConnection("jdbc:h2:"+name+";create=true");
-			
-			sql("SET IGNORECASE TRUE");
 		}
 	}
 	
