@@ -69,14 +69,11 @@ public class Table {
 		owner.sql("CREATE TABLE IF NOT EXISTS " + name + " (" + columnsString + ")");
 	}
 	
-	public void select(String[] columns, String whereCond) throws SQLException {
+	public List<Map<String,Object>> select(String[] columns, String whereCond) throws SQLException {
 		//TODO Have this class return some object that contains a list of key-value mappings
+		String columnsStr = Joiner.on(",").join(columns);
 		
-//		Connection conn = owner.getConn();
-//		String columnsStr = Joiner.on(",").join(columns);
-//		
-//		Statement stmt = conn.createStatement();
-//		ResultSet rs = stmt.executeQuery("SELECT " + columnsStr + " FROM " + name + (whereCond == null ? "" : " WHERE " + whereCond));
+		return owner.sqlQuery("SELECT " + columnsStr + " FROM " + name + (whereCond == null ? "" : " WHERE " + whereCond));
 	};
 	
 	@Accessors(fluent=true,chain=true)
