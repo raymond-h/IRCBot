@@ -2,6 +2,7 @@ package se.kayarr.ircbot.database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -86,19 +87,58 @@ public class Database {
 		return 1;
 	}
 	
+	@Accessors(fluent=true,chain=true)
+	public final class SqlQueryBuilder {
+		
+		@Getter private String query;
+		
+		private Map<Integer, Object> objects = new HashMap<>();
+		
+		private SqlQueryBuilder(String query) {
+			this.query = query;
+		}
+		
+		public SqlQueryBuilder set(int index, Object o) {
+			objects.put(index, o);
+			return this;
+		}
+		
+		public void execute() throws SQLException {
+			PreparedStatement stmt = conn.prepareStatement(query);
+			
+			for(Map.Entry<Integer, Object> e : objects.entrySet()) {
+				stmt.setObject(e.getKey(), e.getValue());
+			}
+			
+			stmt.execute();
+			stmt.close();
+		}
+		
+		public List<Map<String, Object>> executeQuery() throws SQLException {
+			PreparedStatement stmt = conn.prepareStatement(query);
+			
+			for(Map.Entry<Integer, Object> e : objects.entrySet()) {
+				stmt.setObject(e.getKey(), e.getValue());
+			}
+			
+			ResultSet rs = stmt.executeQuery();
+			List<Map<String,Object>> result = convertResultSetToList(rs);
+			stmt.close();
+			return result;
+		}
+	}
+	
+	public SqlQueryBuilder newSqlQuery(String query) {
+		return new SqlQueryBuilder(query);
+	}
+	
 	public void sql(String query) throws SQLException {
-		Statement stmt = conn.createStatement();
-		stmt.execute(query);
-		stmt.close();
+		newSqlQuery(query).execute();
 	}
 	
 	//TODO Make this method actually return data
 	public List<Map<String,Object>> sqlQuery(String query) throws SQLException {
-		Statement stmt = conn.createStatement();
-		ResultSet rs = stmt.executeQuery(query);
-		List<Map<String,Object>> result = convertResultSetToList(rs);
-		stmt.close();
-		return result;
+		return newSqlQuery(query).executeQuery();
 	}
 	
 	//This is oh-so-sneakily borrowed from Vivio...
