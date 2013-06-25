@@ -136,7 +136,6 @@ public class Database {
 		newSqlQuery(query).execute();
 	}
 	
-	//TODO Make this method actually return data
 	public List<Map<String,Object>> sqlQuery(String query) throws SQLException {
 		return newSqlQuery(query).executeQuery();
 	}
