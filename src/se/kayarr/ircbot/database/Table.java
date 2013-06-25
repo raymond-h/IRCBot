@@ -3,9 +3,13 @@ package se.kayarr.ircbot.database;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import com.google.common.base.Joiner;
 
@@ -75,12 +79,73 @@ public class Table {
 //		ResultSet rs = stmt.executeQuery("SELECT " + columnsStr + " FROM " + name + (whereCond == null ? "" : " WHERE " + whereCond));
 	};
 	
-	public void insert(String[] columns, Object[] values) {
-		//TODO Return a builder for inserting maybe
+	@Accessors(fluent=true,chain=true)
+	public final class InsertBuilder {
+		private InsertBuilder() {};
+		
+		private Map<String, String> insertValues = new HashMap<>();
+		
+		public InsertBuilder put(String column, String value) {
+			insertValues.put(column, value);
+			return this;
+		}
+		
+		public void insert() throws SQLException {
+			String[] columns = new String[insertValues.size()];
+			String[] values = new String[insertValues.size()];
+			
+			int i = 0;
+			for(Map.Entry<String,String> e : insertValues.entrySet()) {
+				columns[i] = e.getKey();
+				values[i] = e.getValue();
+				++i;
+			}
+			
+			Table.this.insert(columns, values);
+		}
 	}
 	
-	public void update(String column, Object value, String whereCond) {
-		//TODO Return a builder for updating maybe
+	public InsertBuilder newInsert() {
+		return new InsertBuilder();
+	}
+	
+	//INSERT INTO {this.name} ({columns}) VALUES ({values})
+	public void insert(String[] columns, String[] values) throws SQLException {
+		//TODO Return a builder for inserting maybe
+		Joiner j = Joiner.on(",");
+		String columnsStr = j.join(columns);
+		String valuesStr = j.join(values);
+		
+		owner.sql("INSERT INTO " + name + " (" + columnsStr + ") VALUES (" + valuesStr + ")");
+	}
+	
+	@Accessors(fluent=true,chain=true)
+	public final class UpdateBuilder {
+		private UpdateBuilder() {};
+		
+		private Map<String, String> updateValues = new HashMap<>();
+		@Getter @Setter private String where;
+		
+		public UpdateBuilder set(String column, String value) {
+			updateValues.put(column, value);
+			return this;
+		}
+		
+		public void update() throws SQLException {
+			for(Map.Entry<String,String> e : updateValues.entrySet()) {
+				Table.this.update(e.getKey(), e.getValue(), where);
+			}
+		}
+	}
+	
+	public UpdateBuilder newUpdate() {
+		return new UpdateBuilder();
+	}
+	
+	//UPDATE {this.name} SET {column} = {value} [WHERE {whereCond}]
+	public void update(String column, String value, String whereCond) throws SQLException {
+		owner.sql("UPDATE " + name + " SET " + column + " = " + value +
+				( whereCond == null ? "" : " WHERE " + whereCond ) );
 	}
 	
 	public void delete(String whereCond) {
