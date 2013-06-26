@@ -65,7 +65,7 @@ public class SqlTestCommandModule extends Module implements CommandHandler {
 			
 			bot.sendMessage(channel, "Query matched " + data.size() + " rows");
 			
-			Joiner delimJoin = Joiner.on(" | ");
+			Joiner delimJoin = Joiner.on(" | ").useForNull('\u001d' + "null" + '\u001d');
 			String columnsStr = delimJoin.join(data.get(0).keySet());
 			bot.sendMessage(channel, Colors.BOLD + columnsStr);
 			

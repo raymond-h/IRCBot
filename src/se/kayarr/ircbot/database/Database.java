@@ -14,6 +14,7 @@ import java.util.Map;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 
 public class Database {
@@ -110,7 +111,7 @@ public class Database {
 	@Accessors(fluent=true,chain=true)
 	public final class SqlQueryBuilder {
 		
-		@Getter private String query;
+		@Getter @Setter private String query;
 		
 		private Map<Integer, Object> objects = new HashMap<>();
 		

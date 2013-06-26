@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import com.google.common.base.Joiner;
@@ -40,8 +39,8 @@ public class Table {
 					handler.onTableCreate(this);
 					
 					owner.tableVersions.newInsert()
-						.put("TABLE_NAME", "'" + name + "'")
-						.put("VERSION", Integer.toString(version, 10))
+						.set("TABLE_NAME", name)
+						.set("VERSION", version)
 						.insert();
 				}
 				else {
@@ -53,14 +52,14 @@ public class Table {
 						handler.onTableUpgrade(this, oldVersion, version);
 						
 						int updated = owner.tableVersions.newUpdate()
-							.where("TABLE_NAME = '" + name + "'")
-							.set("VERSION", Integer.toString(version, 10))
+							.where("TABLE_NAME = ?", name)
+							.set("VERSION", version)
 							.update();
 						
-						if(updated < 1) {
+						if(updated == 0) {
 							owner.tableVersions.newInsert()
-								.put("TABLE_NAME", "'" + name + "'")
-								.put("VERSION", Integer.toString(version, 10))
+								.set("TABLE_NAME", name)
+								.set("VERSION", version)
 								.insert();
 						}
 					}
@@ -97,25 +96,58 @@ public class Table {
 	public final class InsertBuilder {
 		private InsertBuilder() {};
 		
-		private Map<String, String> insertValues = new HashMap<>();
+		private Map<String, Object> insertValues = new HashMap<>();
 		
-		public InsertBuilder put(String column, String value) {
+		public InsertBuilder set(String column, Object value) {
 			insertValues.put(column, value);
 			return this;
 		}
 		
-		public void insert() throws SQLException {
-			String[] columns = new String[insertValues.size()];
-			String[] values = new String[insertValues.size()];
+		private String generateParameterString(int n) {
+			if(n <= 0) return "";
 			
-			int i = 0;
-			for(Map.Entry<String,String> e : insertValues.entrySet()) {
-				columns[i] = e.getKey();
-				values[i] = e.getValue();
-				++i;
+			StringBuilder b = new StringBuilder("?");
+			
+			while(--n > 0) {
+				b.append(",?");
 			}
 			
-			Table.this.insert(columns, values);
+			return b.toString();
+		}
+		
+		public void insert() throws SQLException {
+//			String[] columns = new String[insertValues.size()];
+//			String[] values = new String[insertValues.size()];
+//			
+//			int i = 0;
+//			for(Map.Entry<String,String> e : insertValues.entrySet()) {
+//				columns[i] = e.getKey();
+//				values[i] = e.getValue();
+//				++i;
+//			}
+//			
+//			Table.this.insert(columns, values);
+			
+			String parameterList = generateParameterString(insertValues.size());
+			
+			//INSERT INTO {this.name} ({columns}) VALUES ({values})
+			Database.SqlQueryBuilder qb = owner.newSqlQuery(null);
+			StringBuilder sb = new StringBuilder();
+			
+			int i = 1;
+			for(Map.Entry<String,Object> e : insertValues.entrySet()) {
+				if(sb.length() > 0) sb.append(",");
+				
+				sb.append(e.getKey());
+				qb.set(i++, e.getValue());
+			}
+			
+			//INSERT INTO {this.name} ({columns}) VALUES ({values})
+			qb.query("INSERT INTO " + name + " (" + sb.toString() + ") VALUES (" + parameterList + ")");
+			
+			System.out.println("Running query: " + qb.query());
+			
+			qb.executeUpdate();
 		}
 	}
 	
@@ -123,34 +155,65 @@ public class Table {
 		return new InsertBuilder();
 	}
 	
-	//INSERT INTO {this.name} ({columns}) VALUES ({values})
-	public void insert(String[] columns, String[] values) throws SQLException {
-		//TODO Return a builder for inserting maybe
-		Joiner j = Joiner.on(",");
-		String columnsStr = j.join(columns);
-		String valuesStr = j.join(values);
+	public void insert(String[] columns, Object[] values) throws SQLException {
+		InsertBuilder b = newInsert();
 		
-		owner.sql("INSERT INTO " + name + " (" + columnsStr + ") VALUES (" + valuesStr + ")");
+		for(int i = 0; i < columns.length; i++) {
+			b.set(columns[i], values[i]);
+		}
+		
+		b.insert();
 	}
 	
 	@Accessors(fluent=true,chain=true)
 	public final class UpdateBuilder {
 		private UpdateBuilder() {};
 		
-		private Map<String, String> updateValues = new HashMap<>();
-		@Getter @Setter private String where;
+		private Map<String, Object> updateValues = new HashMap<>();
 		
-		public UpdateBuilder set(String column, String value) {
+		@Getter private String where;
+		private Object[] whereParams;
+		
+		public UpdateBuilder set(String column, Object value) {
 			updateValues.put(column, value);
 			return this;
 		}
 		
+		public UpdateBuilder where(String where, Object... whereParams) {
+			this.where = where;
+			this.whereParams = whereParams;
+			return this;
+		}
+		
 		public int update() throws SQLException {
-			int r = 0;
-			for(Map.Entry<String,String> e : updateValues.entrySet()) {
-				r = Table.this.update(e.getKey(), e.getValue(), where);
+//			int r = 0;
+//			for(Map.Entry<String,String> e : updateValues.entrySet()) {
+//				r = Table.this.update(e.getKey(), e.getValue(), where);
+//			}
+//			return r;
+			
+			Database.SqlQueryBuilder qb = owner.newSqlQuery(null);
+			StringBuilder sb = new StringBuilder("SET ");
+			int i = 1;
+			
+			for(Map.Entry<String,Object> e : updateValues.entrySet()) {
+				if(i > 1) sb.append(", ");
+				
+				sb.append(e.getKey() + " = ?");
+				qb.set(i++, e.getValue());
 			}
-			return r;
+			
+			for(Object param : whereParams) {
+				qb.set(i++, param);
+			}
+			
+			//UPDATE {this.name} SET {column} = {value} [WHERE {where}]
+			qb.query("UPDATE " + name + " " + sb.toString() + 
+					( where == null ? "" : " WHERE " + where ));
+			
+			System.out.println("Running query: " + qb.query());
+			
+			return qb.executeUpdate();
 		}
 	}
 	
@@ -158,13 +221,11 @@ public class Table {
 		return new UpdateBuilder();
 	}
 	
-	//UPDATE {this.name} SET {column} = {value} [WHERE {whereCond}]
-	public int update(String column, String value, String whereCond) throws SQLException {
-		return owner.sqlUpdate("UPDATE " + name + " SET " + column + " = " + value +
-				( whereCond == null ? "" : " WHERE " + whereCond ) );
+	public int update(String column, String value, String where) throws SQLException {
+		return newUpdate().set(column, value).where(where).update();
 	}
 	
-	public void delete(String whereCond) {
+	public void delete(String where, Object... whereParams) {
 		//TODO Implement this
 	}
 }
