@@ -3,16 +3,17 @@ package se.kayarr.ircbot.modules;
 import java.util.List;
 
 import org.pircbotx.Channel;
+import org.pircbotx.Colors;
 import org.pircbotx.PircBotX;
 import org.pircbotx.User;
-
-import com.google.common.base.Joiner;
 
 import se.kayarr.ircbot.backend.CommandHandler;
 import se.kayarr.ircbot.backend.CommandManager;
 import se.kayarr.ircbot.backend.Module;
 import se.kayarr.ircbot.backend.ModuleManager;
 import se.kayarr.ircbot.shared.Subcommands;
+
+import com.google.common.base.Joiner;
 
 public class HelpListModule extends Module {
 
@@ -56,7 +57,7 @@ public class HelpListModule extends Module {
 					
 					int i = 0;
 					for(Module m : modules) {
-						moduleNames[i++] = m.getName();
+						moduleNames[i++] = Colors.BOLD + m.getName() + Colors.BOLD;
 					}
 					
 					bot.sendMessage(channel, "Current modules: " + Joiner.on(", ").join(moduleNames));
