@@ -26,11 +26,11 @@ public class Subcommands {
 	}
 	
 	public void dispatchCommand(PircBotX bot, Channel channel, User user, String cmdstr) {
-		String[] parts = cmdstr.split("\\s+", 2);
+		Result r = splitSubcommand(cmdstr);
 		
-		if(subcommands.contains(parts[0])) {
+		if(subcommands.contains(r.command)) {
 			//Command was recognized, dispatch to handler...
-			handler.onHandleCommand(bot, channel, user, parts[0], parts.length > 1 ? parts[1] : "");
+			handler.onHandleCommand(bot, channel, user, r.command, r.parameters);
 		}
 		else {
 			//No command recognized, pass null as command and cmdstr as parameters
@@ -48,5 +48,18 @@ public class Subcommands {
 				dispatchCommand(bot, channel, user, parameters);
 			}
 		};
+	}
+	
+	public static final class Result {
+		public String command;
+		public String parameters;
+	}
+	
+	public static Result splitSubcommand(String cmdstr) {
+		Result r = new Result();
+		String[] parts = cmdstr.split("\\s+", 2);
+		r.command = parts[0];
+		r.parameters = parts.length > 1 ? parts[1] : "";
+		return r;
 	}
 }
