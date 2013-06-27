@@ -56,10 +56,14 @@ public class HelpListModule extends Module {
 				}
 				
 				case "command": {
+					bot.sendMessage(channel, "This contains a helpful message about command '" + r.parameters + "' if it exists!");
+					
 					break;
 				}
 				
 				default: {
+					bot.sendMessage(channel, "Unknown subcommand '" + r.command + "', try 'module [module name]' or 'command [command]' instead!");
+					
 					break;
 				}
 			}
