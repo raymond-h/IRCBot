@@ -3,6 +3,7 @@ package se.kayarr.ircbot.backend;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.pircbotx.PircBotX;
@@ -15,6 +16,7 @@ import se.kayarr.ircbot.modules.HelpListModule;
 import se.kayarr.ircbot.modules.SqlTestCommandModule;
 import se.kayarr.ircbot.modules.TestModule;
 import se.kayarr.ircbot.modules.TimeModule;
+import se.kayarr.ircbot.shared.Strings;
 
 public class ModuleManager {
 	private ModuleManager() {
@@ -51,6 +53,18 @@ public class ModuleManager {
 		}
 		
 		return null;
+	}
+	
+	public List<Module> findModulesMatching(String pattern) {
+		List<Module> r = new LinkedList<>();
+		
+		pattern = pattern.toLowerCase();
+		
+		for(Module m : modules) {
+			if(Strings.matches(pattern, m.getName().toLowerCase())) r.add(m);
+		}
+		
+		return r;
 	}
 	
 	public void initialize() {
