@@ -45,6 +45,14 @@ public class ModuleManager {
 		return ImmutableList.copyOf(modules);
 	}
 	
+	public Module findModuleByName(String name) {
+		for(Module m : modules) {
+			if(m.getName().equalsIgnoreCase(name)) return m;
+		}
+		
+		return null;
+	}
+	
 	public void initialize() {
 		if(!initialized) {
 			initialized = true;
