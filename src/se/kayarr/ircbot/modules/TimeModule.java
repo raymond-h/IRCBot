@@ -16,6 +16,8 @@ public class TimeModule extends Module implements CommandHandler {
 	@Override
 	public void initialize() {
 		
+		setName("Time Display");
+		
 		CommandManager.get().newCommand()
 			.addAlias("time")
 			.handler(this)

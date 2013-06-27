@@ -21,6 +21,8 @@ public class SqlTestCommandModule extends Module implements CommandHandler {
 	@Override
 	public void initialize() {
 		
+		setName("SQL Querying");
+		
 		CommandManager.get().newCommand()
 			.addAlias("sql-query")
 			.handler(this)

@@ -14,6 +14,8 @@ public class TestModule extends Module implements CommandHandler {
 	@Override
 	public void initialize() {
 		
+		setName("Test");
+		
 		CommandManager.get().newCommand()
 			.addAlias("test")
 			.addAlias("test2")

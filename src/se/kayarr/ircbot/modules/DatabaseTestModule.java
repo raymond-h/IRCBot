@@ -21,6 +21,8 @@ public class DatabaseTestModule extends Module implements TableHandler {
 	@Override
 	public void initialize() {
 		
+		setName("Database Test");
+		
 		CommandManager.get().newCommand()
 			.addAlias("dbtest")
 			.handler(dbtest)

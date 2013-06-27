@@ -18,7 +18,7 @@ public class HelpListModule extends Module {
 
 	@Override
 	public void initialize() {
-		setName("HelpList");
+		setName("Help and List");
 		
 		CommandManager.get().newCommand()
 			.addAlias("help")
