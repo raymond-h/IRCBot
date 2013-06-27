@@ -26,6 +26,8 @@ public class CommandListener extends ListenerAdapter<PircBotX> {
 			String command = cmdMatcher.group(1);
 			String parameters = cmdMatcher.group(2);
 			
+			if(parameters == null) parameters = "";
+			
 			boolean handled = CommandManager.get().dispatchCommand(
 					event.getBot(),
 					event.getChannel(),
