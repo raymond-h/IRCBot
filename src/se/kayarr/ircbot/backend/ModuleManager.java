@@ -9,6 +9,7 @@ import org.pircbotx.PircBotX;
 import org.pircbotx.hooks.Event;
 
 import se.kayarr.ircbot.modules.DatabaseTestModule;
+import se.kayarr.ircbot.modules.HelpListModule;
 import se.kayarr.ircbot.modules.SqlTestCommandModule;
 import se.kayarr.ircbot.modules.TestModule;
 import se.kayarr.ircbot.modules.TimeModule;
@@ -19,6 +20,7 @@ public class ModuleManager {
 		addModule(new TimeModule());
 		addModule(new DatabaseTestModule());
 		addModule(new SqlTestCommandModule());
+		addModule(new HelpListModule());
 	};
 	
 	//*** This needs to be replaced to make each bot instance have a separate ModuleManager
