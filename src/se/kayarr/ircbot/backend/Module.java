@@ -2,9 +2,14 @@ package se.kayarr.ircbot.backend;
 
 import java.lang.reflect.Method;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import org.pircbotx.hooks.Event;
 
 public abstract class Module {
+	
+	@Getter @Setter private String name = "";
 	
 	public abstract void initialize();
 	
