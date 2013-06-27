@@ -1,12 +1,17 @@
 package se.kayarr.ircbot.modules;
 
+import java.util.List;
+
 import org.pircbotx.Channel;
 import org.pircbotx.PircBotX;
 import org.pircbotx.User;
 
+import com.google.common.base.Joiner;
+
 import se.kayarr.ircbot.backend.CommandHandler;
 import se.kayarr.ircbot.backend.CommandManager;
 import se.kayarr.ircbot.backend.Module;
+import se.kayarr.ircbot.backend.ModuleManager;
 import se.kayarr.ircbot.shared.Subcommands;
 
 public class HelpListModule extends Module {
@@ -46,7 +51,15 @@ public class HelpListModule extends Module {
 			
 			switch(r.command.toLowerCase()) {
 				case "modules": {
-					bot.sendMessage(channel, "Insert a list of modules here!");
+					List<Module> modules = ModuleManager.get().getModules();
+					String[] moduleNames = new String[modules.size()];
+					
+					int i = 0;
+					for(Module m : modules) {
+						moduleNames[i++] = m.getName();
+					}
+					
+					bot.sendMessage(channel, "Current modules: " + Joiner.on(", ").join(moduleNames));
 					
 					break;
 				}
