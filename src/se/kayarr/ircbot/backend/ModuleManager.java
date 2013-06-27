@@ -8,6 +8,8 @@ import java.util.List;
 import org.pircbotx.PircBotX;
 import org.pircbotx.hooks.Event;
 
+import com.google.common.collect.ImmutableList;
+
 import se.kayarr.ircbot.modules.DatabaseTestModule;
 import se.kayarr.ircbot.modules.HelpListModule;
 import se.kayarr.ircbot.modules.SqlTestCommandModule;
@@ -37,6 +39,10 @@ public class ModuleManager {
 	
 	private void addModule(Module module) {
 		modules.add(module);
+	}
+	
+	public List<Module> getModules() {
+		return ImmutableList.copyOf(modules);
 	}
 	
 	public void initialize() {
