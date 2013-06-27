@@ -38,7 +38,31 @@ public class HelpListModule extends Module {
 		public void onHandleCommand(PircBotX bot, Channel channel, User user,
 				String command, String parameters) {
 			
-			bot.sendMessage(channel, "Nope, no help to be had here.");
+			Subcommands.Result r = Subcommands.splitSubcommand(parameters);
+			
+			switch(r.command.toLowerCase()) {
+				case "module": {
+					Module m = ModuleManager.get().findModuleByName(r.parameters);
+					
+					if(m != null) {
+						bot.sendMessage(channel, "Insert a nice help message for " + 
+								Colors.BOLD + m.getName() + Colors.BOLD + " right here!");
+					}
+					else {
+						bot.sendMessage(channel, "Sorry, can't find a module called that!");
+					}
+					
+					break;
+				}
+				
+				case "command": {
+					break;
+				}
+				
+				default: {
+					break;
+				}
+			}
 		}
 	};
 	
