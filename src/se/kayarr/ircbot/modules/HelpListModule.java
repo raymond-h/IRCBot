@@ -10,8 +10,6 @@ import se.kayarr.ircbot.backend.Module;
 import se.kayarr.ircbot.shared.Subcommands;
 
 public class HelpListModule extends Module {
-	
-	private Subcommands listSubs = new Subcommands("modules", "commands");
 
 	@Override
 	public void initialize() {
@@ -24,10 +22,8 @@ public class HelpListModule extends Module {
 		
 		CommandManager.get().newCommand()
 			.addAlias("list")
-			.handler( listSubs.createHandler() )
+			.handler( list )
 			.add();
-		
-		listSubs.setHandler(listSubCmds);
 	}
 	
 	private CommandHandler help = new CommandHandler() {
@@ -40,17 +36,31 @@ public class HelpListModule extends Module {
 		}
 	};
 	
-	private CommandHandler listSubCmds = new CommandHandler() {
+	private CommandHandler list = new CommandHandler() {
 		
 		@Override
 		public void onHandleCommand(PircBotX bot, Channel channel, User user,
 				String command, String parameters) {
 			
-			if(command == null) {
-				bot.sendMessage(channel, "That command was not recognized! Parameters are '" + parameters + "'");
-			}
-			else {
-				bot.sendMessage(channel, "I recognized the command '" + command + "'! Parameters are '" + parameters + "'");
+			Subcommands.Result r = Subcommands.splitSubcommand(parameters);
+			
+			switch(r.command.toLowerCase()) {
+				case "modules": {
+					bot.sendMessage(channel, "Insert a list of modules here!");
+					
+					break;
+				}
+				
+				case "commands": {
+					bot.sendMessage(channel, "This is a list of commands!");
+					
+					break;
+				}
+				
+				default: {
+					bot.sendMessage(channel, "Unknown subcommand '" + r.command + "', try 'modules' or 'commands' instead!");
+					break;
+				}
 			}
 		}
 	};
