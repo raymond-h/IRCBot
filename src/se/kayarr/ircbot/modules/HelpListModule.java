@@ -27,7 +27,7 @@ public class HelpListModule extends Module {
 			.handler( listSubMan.createHandler() )
 			.add();
 		
-		listSubMan.setHandler(listSubCmd);
+		listSubMan.setHandler(listSubCmds);
 	}
 	
 	private CommandHandler help = new CommandHandler() {
@@ -40,7 +40,7 @@ public class HelpListModule extends Module {
 		}
 	};
 	
-	private CommandHandler listSubCmd = new CommandHandler() {
+	private CommandHandler listSubCmds = new CommandHandler() {
 		
 		@Override
 		public void onHandleCommand(PircBotX bot, Channel channel, User user,
