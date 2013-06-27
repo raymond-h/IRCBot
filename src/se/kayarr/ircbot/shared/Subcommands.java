@@ -13,11 +13,11 @@ import se.kayarr.ircbot.backend.CommandHandler;
 
 import com.google.common.collect.Sets;
 
-public class SubcommandManager {
+public class Subcommands {
 	@Getter private Set<String> subcommands;
 	@Getter @Setter private CommandHandler handler;
 	
-	public SubcommandManager(String... subcmds) {
+	public Subcommands(String... subcmds) {
 		setSubcommands(subcmds);
 	}
 	

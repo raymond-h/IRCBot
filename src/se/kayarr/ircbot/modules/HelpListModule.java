@@ -7,11 +7,11 @@ import org.pircbotx.User;
 import se.kayarr.ircbot.backend.CommandHandler;
 import se.kayarr.ircbot.backend.CommandManager;
 import se.kayarr.ircbot.backend.Module;
-import se.kayarr.ircbot.shared.SubcommandManager;
+import se.kayarr.ircbot.shared.Subcommands;
 
 public class HelpListModule extends Module {
 	
-	private SubcommandManager listSubMan = new SubcommandManager("modules", "commands");
+	private Subcommands listSubs = new Subcommands("modules", "commands");
 
 	@Override
 	public void initialize() {
@@ -24,10 +24,10 @@ public class HelpListModule extends Module {
 		
 		CommandManager.get().newCommand()
 			.addAlias("list")
-			.handler( listSubMan.createHandler() )
+			.handler( listSubs.createHandler() )
 			.add();
 		
-		listSubMan.setHandler(listSubCmds);
+		listSubs.setHandler(listSubCmds);
 	}
 	
 	private CommandHandler help = new CommandHandler() {
