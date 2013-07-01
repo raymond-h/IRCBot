@@ -21,12 +21,12 @@ public class HelpListModule extends Module {
 	public void initialize() {
 		setName("Help and List");
 		
-		CommandManager.get().newCommand()
+		CommandManager.get().newCommand(this)
 			.addAlias("help")
 			.handler( help )
 			.add();
 		
-		CommandManager.get().newCommand()
+		CommandManager.get().newCommand(this)
 			.addAlias("list")
 			.handler( list )
 			.add();
@@ -41,12 +41,22 @@ public class HelpListModule extends Module {
 			Subcommands.Result r = Subcommands.splitSubcommand(parameters);
 			
 			switch(r.command.toLowerCase()) {
-				case "module": {
+				case "module": case "mod": {
 					Module m = ModuleManager.get().findModuleByName(r.parameters);
 					
 					if(m != null) {
-						bot.sendMessage(channel, "Insert a nice help message for " + 
-								Colors.BOLD + m.getName() + Colors.BOLD + " right here!");
+						bot.sendMessage(channel, "Module " + Colors.BOLD + m.getName() + Colors.BOLD);
+						bot.sendMessage(channel, "    This is where the help message goes...");
+						
+						List<CommandManager.Command> addedCommands = m.getAddedCommands();
+						
+						if(addedCommands.size() > 0) {
+							bot.sendMessage(channel, "* This module adds " + Colors.BOLD + addedCommands.size() + Colors.BOLD + " commands:" );
+							
+							for(CommandManager.Command cmd : addedCommands) {
+								bot.sendMessage(channel, "    - " + cmd.usage() + " - Help message for command here...");
+							}
+						}
 					}
 					else {
 						bot.sendMessage(channel, "Sorry, can't find a module called that!");
@@ -55,8 +65,16 @@ public class HelpListModule extends Module {
 					break;
 				}
 				
-				case "command": {
-					bot.sendMessage(channel, "This contains a helpful message about command '" + r.parameters + "' if it exists!");
+				case "command": case "cmd": {
+					CommandManager.Command cmd = CommandManager.get().findMatchingCommand(r.parameters);
+					
+					if(cmd != null) {
+						bot.sendMessage(channel, cmd.usage() + " --- Added by " + Colors.BOLD + cmd.getOwner().getName() + Colors.BOLD);
+						bot.sendMessage(channel, "    Help message for command here...");
+					}
+					else {
+						bot.sendMessage(channel, "Sorry, can't find that command!");
+					}
 					
 					break;
 				}
@@ -79,7 +97,7 @@ public class HelpListModule extends Module {
 			Subcommands.Result r = Subcommands.splitSubcommand(parameters);
 			
 			switch(r.command.toLowerCase()) {
-				case "modules": {
+				case "modules": case "mods": {
 					List<Module> modules = ModuleManager.get().getModules();
 					String[] moduleNames = new String[modules.size()];
 					
@@ -93,8 +111,16 @@ public class HelpListModule extends Module {
 					break;
 				}
 				
-				case "commands": {
-					bot.sendMessage(channel, "This is a list of commands!");
+				case "commands": case "cmds": {
+					List<CommandManager.Command> commands = CommandManager.get().getCommands();
+					String[] commandAliases = new String[commands.size()];
+					
+					int i = 0;
+					for(CommandManager.Command cmd : commands) {
+						commandAliases[i++] = cmd.usage();
+					}
+					
+					bot.sendMessage(channel, "Commands: " + Joiner.on(", ").join(commandAliases));
 					
 					break;
 				}

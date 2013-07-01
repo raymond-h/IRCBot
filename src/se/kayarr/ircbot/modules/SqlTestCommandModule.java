@@ -23,12 +23,12 @@ public class SqlTestCommandModule extends Module implements CommandHandler {
 		
 		setName("SQL Querying");
 		
-		CommandManager.get().newCommand()
+		CommandManager.get().newCommand(this)
 			.addAlias("sql-query")
 			.handler(this)
 			.add();
 		
-		CommandManager.get().newCommand()
+		CommandManager.get().newCommand(this)
 			.addAlias("sql")
 			.handler(new CommandHandler() {
 				@Override

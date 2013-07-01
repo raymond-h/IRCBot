@@ -16,7 +16,7 @@ public class TestModule extends Module implements CommandHandler {
 		
 		setName("Test");
 		
-		CommandManager.get().newCommand()
+		CommandManager.get().newCommand(this)
 			.addAlias("test")
 			.addAlias("test2")
 			.handler(this)

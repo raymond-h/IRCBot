@@ -1,18 +1,23 @@
 package se.kayarr.ircbot.backend;
 
+import java.lang.ref.WeakReference;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import org.pircbotx.Channel;
 import org.pircbotx.PircBotX;
 import org.pircbotx.User;
+
+import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableList;
 
 public class CommandManager {
 	private CommandManager() {
@@ -32,8 +37,12 @@ public class CommandManager {
 
 	@Accessors(fluent = true)
 	public final class CommandEntryBuilder {
-		private CommandEntryBuilder() {
-		};
+		
+		private Module owner;
+		
+		private CommandEntryBuilder(Module owner) {
+			this.owner = owner;
+		}
 
 		@Getter @Setter private CommandHandler handler;
 		private Set<String> aliases = new HashSet<>();
@@ -44,32 +53,55 @@ public class CommandManager {
 		}
 
 		public void add() {
-			registeredCommands.add(new Command(handler, aliases));
+			Command cmd = new Command(handler, aliases);
+			if(owner != null) {
+				owner.addCommand(cmd);
+				cmd.owner = new WeakReference<Module>(owner);
+			}
+			registeredCommands.add(cmd);
 		}
 	}
 
-	@AllArgsConstructor
-	private class Command {
-		public CommandHandler handler;
+	@RequiredArgsConstructor
+	public class Command {
+		public WeakReference<Module> owner;
+		
+		public Module getOwner() {
+			return owner != null ? owner.get() : null;
+		}
+		
+		@NonNull public CommandHandler handler;
 
-		public Set<String> aliases;
+		@NonNull public Set<String> aliases;
 
 		public boolean matchesCommandString(String command) {
 			return aliases.contains(command);
 		}
+		
+		public String usage() {
+			return aliases.size() > 1 ? "[" + Joiner.on(" | ").join(aliases) + "]" : aliases.iterator().next();
+		}
 	}
 
 	public CommandEntryBuilder newCommand() {
-		return new CommandEntryBuilder();
+		return newCommand(null);
+	}
+	
+	public CommandEntryBuilder newCommand(Module owner) {
+		return new CommandEntryBuilder(owner);
 	}
 
-	private Command findMatchingCommand(String command) {
+	public Command findMatchingCommand(String command) {
 		for (Command cmd : registeredCommands) {
 			if (cmd.matchesCommandString(command))
 				return cmd;
 		}
 
 		return null;
+	}
+	
+	public List<Command> getCommands() {
+		return ImmutableList.copyOf(registeredCommands);
 	}
 
 	public boolean dispatchCommand(PircBotX bot, Channel channel, User user,

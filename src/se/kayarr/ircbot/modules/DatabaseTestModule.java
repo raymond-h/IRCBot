@@ -23,12 +23,12 @@ public class DatabaseTestModule extends Module implements TableHandler {
 		
 		setName("Database Test");
 		
-		CommandManager.get().newCommand()
+		CommandManager.get().newCommand(this)
 			.addAlias("dbtest")
 			.handler(dbtest)
 			.add();
 		
-		CommandManager.get().newCommand()
+		CommandManager.get().newCommand(this)
 			.addAlias("dbtest2")
 			.handler(dbtest2)
 			.add();
