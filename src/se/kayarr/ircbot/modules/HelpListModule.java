@@ -132,7 +132,14 @@ public class HelpListModule extends Module {
 				}
 				
 				default: {
-					bot.sendMessage(channel, "Unknown subcommand '" + r.command + "', try 'modules' or 'commands' instead!");
+					if(r.command.length() > 0) {
+						//Default behaviour, user typed something that we don't know what it means
+						bot.sendMessage(channel, "Unknown subcommand '" + r.command + "', try 'modules' or 'commands' instead!");
+					}
+					else {
+						//Default behaviour, user typed absolutely nothing
+						bot.sendMessage(channel, "Try adding 'modules' or 'commands' to the end!");
+					}
 					break;
 				}
 			}
