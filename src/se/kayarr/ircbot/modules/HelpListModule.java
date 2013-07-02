@@ -20,14 +20,17 @@ public class HelpListModule extends Module {
 	@Override
 	public void initialize() {
 		setName("Help and List");
+		setHelpMessage("A module for listing and getting help messages for all loaded modules/commands.");
 		
 		CommandManager.get().newCommand(this)
 			.addAlias("help")
+			.helpMessage("Shows a help message for a module/command, as well as their associated commands/module respectively.")
 			.handler( help )
 			.add();
 		
 		CommandManager.get().newCommand(this)
 			.addAlias("list")
+			.helpMessage("Lists all modules/commands currently added to the bot.")
 			.handler( list )
 			.add();
 	}
@@ -46,15 +49,17 @@ public class HelpListModule extends Module {
 					
 					if(m != null) {
 						bot.sendMessage(channel, "Module " + Colors.BOLD + m.getName() + Colors.BOLD);
-						bot.sendMessage(channel, "    This is where the help message goes...");
+						if(m.getHelpMessage().length() > 0) bot.sendMessage(channel, "    " + m.getHelpMessage());
 						
 						List<CommandManager.Command> addedCommands = m.getAddedCommands();
 						
 						if(addedCommands.size() > 0) {
-							bot.sendMessage(channel, "* This module adds " + Colors.BOLD + addedCommands.size() + Colors.BOLD + " commands:" );
+							int amnt = addedCommands.size();
+							bot.sendMessage(channel, "  * This module adds " + Colors.BOLD + amnt + Colors.BOLD + " command" + (amnt > 1 ? "s" : "") + ":" );
 							
 							for(CommandManager.Command cmd : addedCommands) {
-								bot.sendMessage(channel, "    - " + cmd.usage() + " - Help message for command here...");
+								String helpMsg = cmd.getHelpMessage();
+								bot.sendMessage(channel, "    - " + cmd.usage() + (helpMsg.length() > 0 ? " - " + helpMsg : ""));
 							}
 						}
 					}
@@ -69,8 +74,9 @@ public class HelpListModule extends Module {
 					CommandManager.Command cmd = CommandManager.get().findMatchingCommand(r.parameters);
 					
 					if(cmd != null) {
-						bot.sendMessage(channel, cmd.usage() + " --- Added by " + Colors.BOLD + cmd.getOwner().getName() + Colors.BOLD);
-						bot.sendMessage(channel, "    Help message for command here...");
+						bot.sendMessage(channel, cmd.usage() + " -- Added by " + Colors.BOLD + cmd.getOwner().getName() + Colors.BOLD);
+						String helpMsg = cmd.getHelpMessage();
+						if(helpMsg.length() > 0) bot.sendMessage(channel, "    " + helpMsg);
 					}
 					else {
 						bot.sendMessage(channel, "Sorry, can't find that command!");
@@ -106,7 +112,7 @@ public class HelpListModule extends Module {
 						moduleNames[i++] = Colors.BOLD + m.getName() + Colors.BOLD;
 					}
 					
-					bot.sendMessage(channel, "Current modules: " + Joiner.on(", ").join(moduleNames));
+					bot.sendMessage(channel, "Modules: " + Joiner.on(", ").join(moduleNames));
 					
 					break;
 				}

@@ -46,6 +46,7 @@ public class CommandManager {
 
 		@Getter @Setter private CommandHandler handler;
 		private Set<String> aliases = new HashSet<>();
+		@Getter @Setter private String helpMessage = "";
 
 		public CommandEntryBuilder addAlias(String alias) {
 			this.aliases.add(alias);
@@ -53,7 +54,7 @@ public class CommandManager {
 		}
 
 		public void add() {
-			Command cmd = new Command(handler, aliases);
+			Command cmd = new Command(handler, aliases, helpMessage);
 			if(owner != null) {
 				owner.addCommand(cmd);
 				cmd.owner = new WeakReference<Module>(owner);
@@ -70,16 +71,18 @@ public class CommandManager {
 			return owner != null ? owner.get() : null;
 		}
 		
-		@NonNull public CommandHandler handler;
+		@NonNull private CommandHandler handler;
 
-		@NonNull public Set<String> aliases;
+		@NonNull @Getter private Set<String> aliases;
+		
+		@NonNull @Getter private String helpMessage;
 
 		public boolean matchesCommandString(String command) {
 			return aliases.contains(command);
 		}
 		
 		public String usage() {
-			return aliases.size() > 1 ? "[" + Joiner.on(" | ").join(aliases) + "]" : aliases.iterator().next();
+			return "[" + Joiner.on(" | ").join(aliases) + "]";
 		}
 	}
 

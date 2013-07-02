@@ -14,6 +14,7 @@ import com.google.common.collect.ImmutableList;
 public abstract class Module {
 	
 	@Getter @Setter private String name = "";
+	@Getter @Setter private String helpMessage = "";
 	
 	private List<CommandManager.Command> commands = new ArrayList<>();
 	
