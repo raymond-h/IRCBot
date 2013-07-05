@@ -28,6 +28,10 @@ public class TestModule extends Module implements CommandHandler {
 			String command, String parameters) {
 		
 		bot.sendMessage(channel, "Test message");
+		
+		UserInfoModule.Gender gender = UserInfoModule.getApi().getGender( user.getNick() );
+		
+		bot.sendMessage(channel, "Your gender is " + gender);
 	}
 	
 	public void onAction(ActionEvent<PircBotX> event) {

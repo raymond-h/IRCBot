@@ -6,6 +6,7 @@ import org.pircbotx.User;
 
 import se.kayarr.ircbot.backend.CommandHandler;
 import se.kayarr.ircbot.backend.Module;
+import se.kayarr.ircbot.backend.ModuleManager;
 import se.kayarr.ircbot.shared.Subcommands;
 import se.kayarr.ircbot.users.UserData;
 import se.kayarr.ircbot.users.UserManager;
@@ -27,6 +28,12 @@ public class UserInfoModule extends Module {
 			.add();
 	}
 	
+	private UserData getUserInfo(String user) {
+		return UserManager.get().getUserData(user, USER_INFO_KEY)
+				.defaultValue(Gender.KEY, Gender.UNSPECIFIED)
+				.defaultValue("timezone", "GMT");
+	}
+	
 	private CommandHandler set = new CommandHandler() {
 		
 		@Override
@@ -35,19 +42,15 @@ public class UserInfoModule extends Module {
 			
 			Subcommands.Result r = Subcommands.splitSubcommand(parameters);
 			
-			UserData userInfo = UserManager.get().getUserData(user.getNick(), USER_INFO_KEY)
-													.defaultValue("gender", "unspecified")
-													.defaultValue("timezone", "GMT");
+			UserData userInfo = getUserInfo(user.getNick());
 			
 			switch(r.command.toLowerCase()) {
 				case "gender": {
 					if(r.parameters.length() == 0) {
-						bot.sendMessage(channel, "Your gender is currently '" + userInfo.getString("gender") + "'");
+						bot.sendMessage(channel, "Your gender is currently '" + userInfo.get(Gender.KEY) + "'");
 					}
 					else {
-						userInfo.put("gender", r.parameters);
-						
-						bot.sendMessage(channel, "Your gender has been set to '" + userInfo.getString("gender") + "'");
+						bot.sendMessage(channel, "Sorry, setting gender is unsupported so far!");
 					}
 					
 					break;
@@ -67,5 +70,29 @@ public class UserInfoModule extends Module {
 			}
 		}
 	};
+	
+	public static enum Gender {
+		MALE(),
+		FEMALE(),
+		NEITHER(),
+		UNSPECIFIED();
+		
+		public static final String KEY = "gender";
+	}
+	
+	public class Api {
+		
+		public Gender getGender(String user) {
+			UserData userInfo = getUserInfo(user);
+			
+			return userInfo.getAs(Gender.KEY, Gender.class);
+		}
+	}
+	
+	public static Api getApi() {
+		UserInfoModule m = ModuleManager.get().findModuleByType(UserInfoModule.class);
+		
+		return m.new Api();
+	}
 
 }
