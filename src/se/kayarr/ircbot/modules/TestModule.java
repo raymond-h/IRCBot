@@ -8,6 +8,7 @@ import org.pircbotx.hooks.events.ActionEvent;
 import se.kayarr.ircbot.backend.CommandHandler;
 import se.kayarr.ircbot.backend.CommandManager;
 import se.kayarr.ircbot.backend.Module;
+import se.kayarr.ircbot.modules.UserInfoModule.Gender;
 
 public class TestModule extends Module implements CommandHandler {
 
@@ -29,7 +30,7 @@ public class TestModule extends Module implements CommandHandler {
 		
 		bot.sendMessage(channel, "Test message");
 		
-		UserInfoModule.Gender gender = UserInfoModule.getApi().getGender( user.getNick() );
+		Gender gender = UserInfoModule.getApi().getGender( user.getNick() );
 		
 		bot.sendMessage(channel, "Your gender is " + gender);
 	}
