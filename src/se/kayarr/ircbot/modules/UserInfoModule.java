@@ -50,7 +50,10 @@ public class UserInfoModule extends Module {
 						bot.sendMessage(channel, "Your gender is currently '" + userInfo.get(Gender.KEY) + "'");
 					}
 					else {
-						bot.sendMessage(channel, "Sorry, setting gender is unsupported so far!");
+						Gender gender = Gender.valueOf(r.parameters);
+						userInfo.put(Gender.KEY, gender);
+						
+						bot.sendMessage(channel, "Your gender has been set to '" + userInfo.get(Gender.KEY) + "'");
 					}
 					
 					break;
