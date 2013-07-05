@@ -1,5 +1,9 @@
 package se.kayarr.ircbot.modules;
 
+import java.util.TimeZone;
+
+import lombok.Getter;
+
 import org.pircbotx.Channel;
 import org.pircbotx.PircBotX;
 import org.pircbotx.User;
@@ -11,9 +15,13 @@ import se.kayarr.ircbot.shared.Subcommands;
 import se.kayarr.ircbot.users.UserData;
 import se.kayarr.ircbot.users.UserManager;
 
+import com.google.common.base.Joiner;
+
 public class UserInfoModule extends Module {
 	
 	public static final String USER_INFO_KEY = "se.kayarr.user_info";
+	public static final String GENDER_KEY = "gender";
+	public static final String TIMEZONE_KEY = "timezone";
 
 	@Override
 	public void initialize() {
@@ -30,8 +38,8 @@ public class UserInfoModule extends Module {
 	
 	private UserData getUserInfo(String user) {
 		return UserManager.get().getUserData(user, USER_INFO_KEY)
-				.defaultValue(Gender.KEY, Gender.UNSPECIFIED)
-				.defaultValue("timezone", "GMT");
+				.defaultValue(GENDER_KEY, Gender.UNSPECIFIED)
+				.defaultValue(TIMEZONE_KEY, TimeZone.getDefault());
 	}
 	
 	private CommandHandler set = new CommandHandler() {
@@ -42,25 +50,33 @@ public class UserInfoModule extends Module {
 			
 			Subcommands.Result r = Subcommands.splitSubcommand(parameters);
 			
-			UserData userInfo = getUserInfo(user.getNick());
+			Api api = getApi(user.getNick());
 			
 			switch(r.command.toLowerCase()) {
 				case "gender": {
 					if(r.parameters.length() == 0) {
-						bot.sendMessage(channel, "Your gender is currently '" + userInfo.get(Gender.KEY) + "'");
+						bot.sendMessage(channel, "Your gender is currently '" + api.getGender() + "'");
 					}
 					else {
 						Gender gender = Gender.valueOf(r.parameters);
-						userInfo.put(Gender.KEY, gender);
+						api.setGender(gender);
 						
-						bot.sendMessage(channel, "Your gender has been set to '" + userInfo.get(Gender.KEY) + "'");
+						bot.sendMessage(channel, "Your gender has been set to '" + api.getGender() + "'");
 					}
 					
 					break;
 				}
 				
 				case "timezone": {
-					bot.sendMessage(channel, "Gurrgurr timezone is set");
+					if(r.parameters.length() == 0) {
+						bot.sendMessage(channel, "Your timezone is currently '" + api.getTimezone().getDisplayName() + "'");
+					}
+					else {
+						TimeZone timezone = TimeZone.getTimeZone(r.parameters);
+						api.setTimezone(timezone);
+						
+						bot.sendMessage(channel, "Your timezone has been set to '" + api.getTimezone().getDisplayName() + "'");
+					}
 					
 					break;
 				}
@@ -79,23 +95,39 @@ public class UserInfoModule extends Module {
 		FEMALE(),
 		NEITHER(),
 		UNSPECIFIED();
-		
-		public static final String KEY = "gender";
 	}
 	
 	public class Api {
 		
-		public Gender getGender(String user) {
-			UserData userInfo = getUserInfo(user);
-			
-			return userInfo.getAs(Gender.KEY, Gender.class);
+		@Getter private String user;
+		@Getter private UserData userInfo;
+		
+		private Api(String user) {
+			this.user = user;
+			userInfo = UserInfoModule.this.getUserInfo(user);
+		}
+		
+		public Gender getGender() {
+			return userInfo.getAs(GENDER_KEY, Gender.class);
+		}
+		
+		public void setGender(Gender gender) {
+			userInfo.put(GENDER_KEY, gender);
+		}
+		
+		public TimeZone getTimezone() {
+			return userInfo.getAs(TIMEZONE_KEY, TimeZone.class);
+		}
+		
+		public void setTimezone(TimeZone timezone) {
+			userInfo.put(TIMEZONE_KEY, timezone);
 		}
 	}
 	
-	public static Api getApi() {
+	public static Api getApi(String user) {
 		UserInfoModule m = ModuleManager.get().findModuleByType(UserInfoModule.class);
 		
-		return m.new Api();
+		return m.new Api(user);
 	}
 
 }
