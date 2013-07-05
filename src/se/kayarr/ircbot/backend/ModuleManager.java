@@ -86,6 +86,14 @@ public class ModuleManager {
 		return null;
 	}
 	
+	public <T extends Module> T findModuleByType(Class<T> clazz) {
+		for(Module m : modules) {
+			if(clazz.isInstance(m)) return clazz.cast(m);
+		}
+		
+		return null;
+	}
+	
 	public List<Module> findModulesMatching(String pattern) {
 		List<Module> r = new LinkedList<>();
 		
