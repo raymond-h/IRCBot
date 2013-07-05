@@ -1,5 +1,6 @@
 package se.kayarr.ircbot.modules;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -20,6 +21,7 @@ public class TimeModule extends Module implements CommandHandler {
 		
 		CommandManager.get().newCommand(this)
 			.addAlias("time")
+			.helpMessage("Displays your current time, using the timezone you have set for yourself (see User Info).")
 			.handler(this)
 			.add();
 	}
@@ -28,9 +30,13 @@ public class TimeModule extends Module implements CommandHandler {
 	public void onHandleCommand(PircBotX bot, Channel channel, User user,
 			String command, String parameters) {
 		
-		String time = SimpleDateFormat.getTimeInstance().format(new Date());
+		DateFormat df = SimpleDateFormat.getTimeInstance();
 		
-		bot.sendMessage(channel, "The time is " + time);
+		df.setTimeZone( UserInfoModule.getApi(user.getNick()).getTimezone() );
+		
+		String time = df.format(new Date());
+		
+		bot.sendMessage(channel, "Your time is " + time);
 	}
 
 }

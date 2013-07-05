@@ -30,7 +30,7 @@ public class TestModule extends Module implements CommandHandler {
 		
 		bot.sendMessage(channel, "Test message");
 		
-		Gender gender = UserInfoModule.getApi().getGender( user.getNick() );
+		Gender gender = UserInfoModule.getApi( user.getNick() ).getGender();
 		
 		bot.sendMessage(channel, "Your gender is " + gender);
 	}
