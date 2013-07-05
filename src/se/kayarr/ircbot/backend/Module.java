@@ -41,4 +41,8 @@ public abstract class Module {
 		return null;
 	}
 	
+	protected CommandManager.CommandEntryBuilder newCommand() {
+		return CommandManager.get().newCommand(this);
+	}
+	
 }
