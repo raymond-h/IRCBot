@@ -11,11 +11,6 @@ import java.util.Set;
 import org.pircbotx.PircBotX;
 import org.pircbotx.hooks.Event;
 
-import se.kayarr.ircbot.modules.DatabaseTestModule;
-import se.kayarr.ircbot.modules.HelpListModule;
-import se.kayarr.ircbot.modules.SqlTestCommandModule;
-import se.kayarr.ircbot.modules.TestModule;
-import se.kayarr.ircbot.modules.TimeModule;
 import se.kayarr.ircbot.shared.Strings;
 
 import com.google.common.collect.ImmutableList;

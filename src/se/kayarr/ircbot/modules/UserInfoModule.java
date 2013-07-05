@@ -15,8 +15,6 @@ import se.kayarr.ircbot.shared.Subcommands;
 import se.kayarr.ircbot.users.UserData;
 import se.kayarr.ircbot.users.UserManager;
 
-import com.google.common.base.Joiner;
-
 public class UserInfoModule extends Module {
 	
 	public static final String USER_INFO_KEY = "se.kayarr.user_info";
