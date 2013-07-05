@@ -1,15 +1,15 @@
 package se.kayarr.ircbot.backend;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.pircbotx.PircBotX;
 import org.pircbotx.hooks.Event;
-
-import com.google.common.collect.ImmutableList;
 
 import se.kayarr.ircbot.modules.DatabaseTestModule;
 import se.kayarr.ircbot.modules.HelpListModule;
@@ -18,13 +18,18 @@ import se.kayarr.ircbot.modules.TestModule;
 import se.kayarr.ircbot.modules.TimeModule;
 import se.kayarr.ircbot.shared.Strings;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.reflect.ClassPath;
+import com.google.common.reflect.ClassPath.ClassInfo;
+
 public class ModuleManager {
 	private ModuleManager() {
-		addModule(new TestModule());
-		addModule(new TimeModule());
-		addModule(new DatabaseTestModule());
-		addModule(new SqlTestCommandModule());
-		addModule(new HelpListModule());
+		addModules();
+//		addModule(new TestModule());
+//		addModule(new TimeModule());
+//		addModule(new DatabaseTestModule());
+//		addModule(new SqlTestCommandModule());
+//		addModule(new HelpListModule());
 	};
 	
 	//*** This needs to be replaced to make each bot instance have a separate ModuleManager
@@ -38,6 +43,32 @@ public class ModuleManager {
 	private boolean initialized = false;
 	
 	private List<Module> modules = new ArrayList<>();
+	
+	private void addModules() {
+		//Uses Guava stuff to load all classes in se.kayarr.ircbot.modules
+		
+		try {
+			ClassPath classPath = ClassPath.from( getClass().getClassLoader() );
+			Set<ClassInfo> classInfos = classPath.getTopLevelClasses("se.kayarr.ircbot.modules");
+			
+			for(ClassInfo classInfo : classInfos) {
+				System.out.println("Processing " + classInfo.getName());
+				
+				Class<?> clazz = classInfo.load();
+				
+				if(!Module.class.isAssignableFrom(clazz)) {
+					System.err.println("Class " + clazz.getCanonicalName() + " not a subclass of Module, ignoring...");
+					continue;
+				}
+				
+				Module m = (Module) clazz.newInstance();
+				addModule(m);
+			}
+		}
+		catch (IOException | InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	private void addModule(Module module) {
 		modules.add(module);
