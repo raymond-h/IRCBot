@@ -32,7 +32,7 @@ public class TimeModule extends Module implements CommandHandler {
 		
 		DateFormat df = SimpleDateFormat.getTimeInstance();
 		
-		df.setTimeZone( UserInfoModule.getApi(user.getNick()).getTimezone() );
+		df.setTimeZone( UserInfoModule.getApi(user.getNick()).getTimeZone() );
 		
 		String time = df.format(new Date());
 		

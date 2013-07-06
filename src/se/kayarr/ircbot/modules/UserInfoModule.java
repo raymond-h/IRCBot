@@ -1,5 +1,6 @@
 package se.kayarr.ircbot.modules;
 
+import java.util.Locale;
 import java.util.TimeZone;
 
 import lombok.Getter;
@@ -19,68 +20,81 @@ public class UserInfoModule extends Module {
 	
 	public static final String USER_INFO_KEY = "se.kayarr.user_info";
 	public static final String GENDER_KEY = "gender";
-	public static final String TIMEZONE_KEY = "timezone";
+	public static final String TIME_ZONE_KEY = "timezone";
 
 	@Override
 	public void initialize() {
 		
 		setName("User Info");
-		setHelpMessage("A module that keeps track of information about users (specified by themselves): their timezone and gender.");
+		setHelpMessage("A module that keeps track of information about users (specified by themselves): their time zone and gender.");
 		
 		newCommand()
-			.addAlias("set")
-			.handler(set)
-			.helpMessage("Sets your timezone or gender to the one you specify (if valid).")
+			.addAlias("gender")
+			.handler(gender)
+			.helpMessage("Sets or checks your current gender.")
+			.add();
+		
+		newCommand()
+			.addAlias("timezone")
+			.addAlias("time-zone")
+			.handler(timezone)
+			.helpMessage("Sets or checks your current time zone.")
 			.add();
 	}
 	
 	private UserData getUserInfo(String user) {
 		return UserManager.get().getUserData(user, USER_INFO_KEY)
 				.defaultValue(GENDER_KEY, Gender.UNSPECIFIED)
-				.defaultValue(TIMEZONE_KEY, TimeZone.getDefault());
+				.defaultValue(TIME_ZONE_KEY, TimeZone.getDefault());
 	}
 	
-	private CommandHandler set = new CommandHandler() {
-		
+	private CommandHandler gender = new CommandHandler() {
 		@Override
 		public void onHandleCommand(PircBotX bot, Channel channel, User user,
 				String command, String parameters) {
 			
 			Subcommands.Result r = Subcommands.splitSubcommand(parameters);
-			
 			Api api = getApi(user.getNick());
 			
 			switch(r.command.toLowerCase()) {
-				case "gender": {
-					if(r.parameters.length() == 0) {
-						bot.sendMessage(channel, "Your gender is currently '" + api.getGender() + "'");
-					}
-					else {
-						Gender gender = Gender.valueOf(r.parameters);
-						api.setGender(gender);
-						
-						bot.sendMessage(channel, "Your gender has been set to '" + api.getGender() + "'");
-					}
+				case "set": {
+					Gender gender = Gender.valueOf(r.parameters);
+					api.setGender(gender);
+					
+					bot.sendMessage(channel, "Your gender has been set to '" + api.getGender() + "'");
 					
 					break;
 				}
-				
-				case "timezone": {
-					if(r.parameters.length() == 0) {
-						bot.sendMessage(channel, "Your timezone is currently '" + api.getTimezone().getDisplayName() + "'");
-					}
-					else {
-						TimeZone timezone = TimeZone.getTimeZone(r.parameters);
-						api.setTimezone(timezone);
-						
-						bot.sendMessage(channel, "Your timezone has been set to '" + api.getTimezone().getDisplayName() + "'");
-					}
-					
-					break;
-				}
-				
 				default: {
-					bot.sendMessage(channel, "Error: '" + r.command + "' is not a valid property.");
+					bot.sendMessage(channel, "Your gender is currently '" + api.getGender() + "'");
+					
+					break;
+				}
+			}
+		}
+	};
+	
+	private CommandHandler timezone = new CommandHandler() {
+		@Override
+		public void onHandleCommand(PircBotX bot, Channel channel, User user,
+				String command, String parameters) {
+			
+			Subcommands.Result r = Subcommands.splitSubcommand(parameters);
+			Api api = getApi(user.getNick());
+			
+			Locale locale = Locale.ENGLISH;
+			
+			switch(r.command.toLowerCase()) {
+				case "set": {
+					TimeZone timezone = TimeZone.getTimeZone(r.parameters);
+					api.setTimeZone(timezone);
+					
+					bot.sendMessage(channel, "Your timezone has been set to '" + api.getTimeZone().getDisplayName(locale) + "'");
+					
+					break;
+				}
+				default: {
+					bot.sendMessage(channel, "Your timezone is currently '" + api.getTimeZone().getDisplayName(locale) + "'");
 					
 					break;
 				}
@@ -113,12 +127,12 @@ public class UserInfoModule extends Module {
 			userInfo.put(GENDER_KEY, gender);
 		}
 		
-		public TimeZone getTimezone() {
-			return userInfo.getAs(TIMEZONE_KEY, TimeZone.class);
+		public TimeZone getTimeZone() {
+			return userInfo.getAs(TIME_ZONE_KEY, TimeZone.class);
 		}
 		
-		public void setTimezone(TimeZone timezone) {
-			userInfo.put(TIMEZONE_KEY, timezone);
+		public void setTimeZone(TimeZone timezone) {
+			userInfo.put(TIME_ZONE_KEY, timezone);
 		}
 	}
 	
