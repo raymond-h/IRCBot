@@ -6,6 +6,8 @@ import org.pircbotx.PircBotX;
 import org.pircbotx.exception.IrcException;
 import org.pircbotx.exception.NickAlreadyInUseException;
 
+import se.kayarr.ircbot.users.UserManager;
+
 public class Main {
 
 	public static void main(String[] args) {
@@ -17,6 +19,7 @@ public class Main {
 			bot.getListenerManager().addListener(new ModuleIrcEventListener());
 			
 			ModuleManager.get().initialize();
+			UserManager.get().initialize();
 
 			try {
 				bot.connect("portlane.esper.net");
