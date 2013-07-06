@@ -1,3 +1,4 @@
 bin/
 
 *.db
+user_data.json
