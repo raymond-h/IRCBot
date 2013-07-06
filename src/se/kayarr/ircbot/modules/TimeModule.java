@@ -9,7 +9,6 @@ import org.pircbotx.PircBotX;
 import org.pircbotx.User;
 
 import se.kayarr.ircbot.backend.CommandHandler;
-import se.kayarr.ircbot.backend.CommandManager;
 import se.kayarr.ircbot.backend.Module;
 
 public class TimeModule extends Module implements CommandHandler {
@@ -19,7 +18,7 @@ public class TimeModule extends Module implements CommandHandler {
 		
 		setName("Time Display");
 		
-		CommandManager.get().newCommand(this)
+		newCommand()
 			.addAlias("time")
 			.helpMessage("Displays your current time, using the timezone you have set for yourself (see User Info).")
 			.handler(this)

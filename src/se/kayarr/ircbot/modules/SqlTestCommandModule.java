@@ -10,7 +10,6 @@ import org.pircbotx.PircBotX;
 import org.pircbotx.User;
 
 import se.kayarr.ircbot.backend.CommandHandler;
-import se.kayarr.ircbot.backend.CommandManager;
 import se.kayarr.ircbot.backend.Module;
 import se.kayarr.ircbot.database.Database;
 
@@ -23,12 +22,12 @@ public class SqlTestCommandModule extends Module implements CommandHandler {
 		
 		setName("SQL Querying");
 		
-		CommandManager.get().newCommand(this)
+		newCommand()
 			.addAlias("sql-query")
 			.handler(this)
 			.add();
 		
-		CommandManager.get().newCommand(this)
+		newCommand()
 			.addAlias("sql")
 			.handler(new CommandHandler() {
 				@Override

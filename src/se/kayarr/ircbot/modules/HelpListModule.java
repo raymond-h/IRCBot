@@ -22,13 +22,13 @@ public class HelpListModule extends Module {
 		setName("Help and List");
 		setHelpMessage("A module for listing and getting help messages for all loaded modules/commands.");
 		
-		CommandManager.get().newCommand(this)
+		newCommand()
 			.addAlias("help")
 			.helpMessage("Shows a help message for a module/command, as well as their associated commands/module respectively.")
 			.handler( help )
 			.add();
 		
-		CommandManager.get().newCommand(this)
+		newCommand()
 			.addAlias("list")
 			.helpMessage("Lists all modules/commands currently added to the bot.")
 			.handler( list )

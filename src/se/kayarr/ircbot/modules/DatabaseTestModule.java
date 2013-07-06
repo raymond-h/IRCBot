@@ -7,7 +7,6 @@ import org.pircbotx.PircBotX;
 import org.pircbotx.User;
 
 import se.kayarr.ircbot.backend.CommandHandler;
-import se.kayarr.ircbot.backend.CommandManager;
 import se.kayarr.ircbot.backend.Module;
 import se.kayarr.ircbot.database.Database;
 import se.kayarr.ircbot.database.Table;
@@ -23,12 +22,12 @@ public class DatabaseTestModule extends Module implements TableHandler {
 		
 		setName("Database Test");
 		
-		CommandManager.get().newCommand(this)
+		newCommand()
 			.addAlias("dbtest")
 			.handler(dbtest)
 			.add();
 		
-		CommandManager.get().newCommand(this)
+		newCommand()
 			.addAlias("dbtest2")
 			.handler(dbtest2)
 			.add();

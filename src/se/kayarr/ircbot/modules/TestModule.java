@@ -6,7 +6,6 @@ import org.pircbotx.User;
 import org.pircbotx.hooks.events.ActionEvent;
 
 import se.kayarr.ircbot.backend.CommandHandler;
-import se.kayarr.ircbot.backend.CommandManager;
 import se.kayarr.ircbot.backend.Module;
 import se.kayarr.ircbot.modules.UserInfoModule.Gender;
 
@@ -17,7 +16,7 @@ public class TestModule extends Module implements CommandHandler {
 		
 		setName("Test");
 		
-		CommandManager.get().newCommand(this)
+		newCommand()
 			.addAlias("test")
 			.addAlias("test2")
 			.handler(this)
