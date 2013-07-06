@@ -1,8 +1,5 @@
 package se.kayarr.ircbot.backend;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.pircbotx.PircBotX;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
@@ -13,33 +10,34 @@ public class CommandListener extends ListenerAdapter<PircBotX> {
 		updateEventMethodMapping(CommandListener.class);
 	}
 	
-	private static Pattern commandRegex = Pattern.compile("!(.+?)(?:\\s+(.+))?$");
-	
 	@Override
 	public void onMessage(MessageEvent<PircBotX> event) throws Exception {
 		String message = event.getMessage();
 		
-		if(isValidCommand(message)) {
-			Matcher cmdMatcher = commandRegex.matcher(message);
+		int indexOfCommand = startOfCommand(event.getBot(), message);
+		if(indexOfCommand >= 0) {
+			String[] cmdParts = message.substring(indexOfCommand).split("\\s+", 2);
 			
-			cmdMatcher.find();
-			String command = cmdMatcher.group(1);
-			String parameters = cmdMatcher.group(2);
-			
-			if(parameters == null) parameters = "";
+			System.out.println("Dispatching command '" + cmdParts[0] + "'");
+			if(cmdParts.length > 1) System.out.println("Parameters are '" + cmdParts[1] + "'");
 			
 			boolean handled = CommandManager.get().dispatchCommand(
 					event.getBot(),
 					event.getChannel(),
 					event.getUser(),
-					command, parameters);
+					cmdParts[0], cmdParts.length > 1 ? cmdParts[1] : "");
 			
 			if(!handled) event.respond("No such command");
 		}
 	}
 	
-	private boolean isValidCommand(String cmdStr) {
-		return commandRegex.matcher(cmdStr).matches();
+	private static int startOfCommand(PircBotX bot, String string) {
+		if(string.startsWith("!")) return 1;
+		
+		String namedCommand = bot.getNick() + ", ";
+		if(string.substring(0, namedCommand.length()).equalsIgnoreCase(namedCommand)) return namedCommand.length();
+		
+		return -1;
 	}
 	
 }
