@@ -74,7 +74,11 @@ public class HelpListModule extends Module {
 					CommandManager.Command cmd = CommandManager.get().findMatchingCommand(r.parameters);
 					
 					if(cmd != null) {
-						bot.sendMessage(channel, cmd.usage() + " -- Added by " + Colors.BOLD + cmd.getOwner().getName() + Colors.BOLD);
+						if(cmd.getOwner() != null)
+							bot.sendMessage(channel, cmd.usage() + " -- Added by " + Colors.BOLD + cmd.getOwner().getName() + Colors.BOLD);
+						
+						else bot.sendMessage(channel, cmd.usage() + " -- Built-in command");
+						
 						String helpMsg = cmd.getHelpMessage();
 						if(helpMsg.length() > 0) bot.sendMessage(channel, "    " + helpMsg);
 					}
