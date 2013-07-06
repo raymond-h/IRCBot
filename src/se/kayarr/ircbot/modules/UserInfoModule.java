@@ -1,6 +1,8 @@
 package se.kayarr.ircbot.modules;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 
 import lombok.Getter;
@@ -21,6 +23,24 @@ public class UserInfoModule extends Module {
 	public static final String USER_INFO_KEY = "se.kayarr.user_info";
 	public static final String GENDER_KEY = "gender";
 	public static final String TIME_ZONE_KEY = "timezone";
+	
+	private static final Map<String, Gender> genderStringMappings = new HashMap<>();
+	
+	static {
+		genderStringMappings.put("male", Gender.MALE);
+		genderStringMappings.put("man", Gender.MALE);
+		
+		genderStringMappings.put("female", Gender.FEMALE);
+		genderStringMappings.put("woman", Gender.FEMALE);
+		
+		genderStringMappings.put("neither", Gender.NEITHER);
+		
+		genderStringMappings.put("unspecified", Gender.UNSPECIFIED);
+	}
+	
+	public static Gender getGenderByString(String str) {
+		return genderStringMappings.get(str);
+	}
 
 	@Override
 	public void initialize() {
@@ -58,7 +78,13 @@ public class UserInfoModule extends Module {
 			
 			switch(r.command.toLowerCase()) {
 				case "set": {
-					Gender gender = Gender.valueOf(r.parameters);
+					Gender gender = getGenderByString(r.parameters.toLowerCase());
+					
+					if(gender == null) {
+						bot.sendMessage(channel, "That is not a valid gender!");
+						return;
+					}
+					
 					api.setGender(gender);
 					
 					bot.sendMessage(channel, "Your gender has been set to '" + api.getGender() + "'");
